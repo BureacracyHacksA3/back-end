@@ -39,7 +39,6 @@ public class AuthenticationController {
     private PasswordEncoder passwordEncoder;
 
     @PostMapping("/login")
-
     public ResponseEntity<String> authenticateUser(@RequestBody Login login) {
         try{
             Authentication authentication = authenticationManager.authenticate(
@@ -67,14 +66,18 @@ public class AuthenticationController {
         }
 
         UserJPA user = new UserJPA();
-
+        user.setUser_id(register.getUser_id());
+        System.out.println("user id " + register.getUser_id());
         user.setName(register.getName());
         user.setUsername(register.getUsername());
         user.setEmail(register.getEmail());
         user.setPassword(passwordEncoder.encode(register.getPassword()));
-
+        user.setCreated_at(register.getCreated_at());
+        user.setSurname(register.getSurname());
+        user.setPhone_number(register.getPhone_number());
 
         RoleJPA roles = roleRepository.findByName("ROLE_ADMIN").get();
+        System.out.println("found role " + roles.getName());
         user.setRoles(Collections.singleton(roles));
 
         userRepository.save(user);
