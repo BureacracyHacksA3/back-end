@@ -20,7 +20,7 @@ public class UserJPA implements Persistable<Integer>{
     private String password;
     private String email;
     private String phone_number;
-    private String adress;
+    private String address;
     private Timestamp created_at;
     private String name;
     private String surname;
