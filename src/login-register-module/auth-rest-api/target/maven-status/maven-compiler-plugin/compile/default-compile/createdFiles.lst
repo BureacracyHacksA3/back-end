@@ -1,0 +1,10 @@
+com\example\authrestapi\payload\Login.class
+com\example\authrestapi\payload\Register.class
+com\example\authrestapi\controller\AuthenticationController.class
+com\example\authrestapi\service\CustomUserDetailsService.class
+com\example\authrestapi\entity\UserJPA.class
+com\example\authrestapi\repository\UserRepository.class
+com\example\authrestapi\repository\RoleRepository.class
+com\example\authrestapi\config\SecurityConfig.class
+com\example\authrestapi\entity\RoleJPA.class
+com\example\authrestapi\AuthRestApiApplication.class

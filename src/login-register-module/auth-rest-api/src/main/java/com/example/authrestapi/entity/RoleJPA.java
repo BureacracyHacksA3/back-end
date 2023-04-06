@@ -12,7 +12,7 @@ import jakarta.persistence.*;
 public class RoleJPA {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long role_id;
 
     @Column(length = 60)
     private String name;
