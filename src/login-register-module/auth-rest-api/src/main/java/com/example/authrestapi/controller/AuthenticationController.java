@@ -67,7 +67,7 @@ public class AuthenticationController {
 
         UserJPA user = new UserJPA();
         user.setUser_id(register.getUser_id());
-        System.out.println("user id " + register.getUser_id());
+        //System.out.println("user id " + register.getUser_id());
         user.setName(register.getName());
         user.setUsername(register.getUsername());
         user.setEmail(register.getEmail());

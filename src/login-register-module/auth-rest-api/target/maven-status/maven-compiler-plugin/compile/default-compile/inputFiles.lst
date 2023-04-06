@@ -1,0 +1,10 @@
+D:\Projects\IP\back-end\src\login-register-module\auth-rest-api\src\main\java\com\example\authrestapi\controller\AuthenticationController.java
+D:\Projects\IP\back-end\src\login-register-module\auth-rest-api\src\main\java\com\example\authrestapi\repository\UserRepository.java
+D:\Projects\IP\back-end\src\login-register-module\auth-rest-api\src\main\java\com\example\authrestapi\entity\UserJPA.java
+D:\Projects\IP\back-end\src\login-register-module\auth-rest-api\src\main\java\com\example\authrestapi\config\SecurityConfig.java
+D:\Projects\IP\back-end\src\login-register-module\auth-rest-api\src\main\java\com\example\authrestapi\service\CustomUserDetailsService.java
+D:\Projects\IP\back-end\src\login-register-module\auth-rest-api\src\main\java\com\example\authrestapi\AuthRestApiApplication.java
+D:\Projects\IP\back-end\src\login-register-module\auth-rest-api\src\main\java\com\example\authrestapi\payload\Register.java
+D:\Projects\IP\back-end\src\login-register-module\auth-rest-api\src\main\java\com\example\authrestapi\payload\Login.java
+D:\Projects\IP\back-end\src\login-register-module\auth-rest-api\src\main\java\com\example\authrestapi\entity\RoleJPA.java
+D:\Projects\IP\back-end\src\login-register-module\auth-rest-api\src\main\java\com\example\authrestapi\repository\RoleRepository.java
