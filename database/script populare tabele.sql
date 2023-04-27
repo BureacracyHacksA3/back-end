@@ -59,7 +59,7 @@ INSERT INTO user_tasks(task_id, user_id) VALUES
     (2, 1),
     (3, 2),
     (4, 3),
-    (5, 3);
+    (1, 3);
 
 -- Populam tabela users_roles
 INSERT INTO users_roles(user_id, role_id) VALUES 
