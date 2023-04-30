@@ -59,7 +59,7 @@ INSERT INTO user_tasks(task_id, user_id) VALUES
     (2, 1),
     (3, 2),
     (4, 3),
-    (1, 3);
+    (3, 3);
 
 -- Populam tabela users_roles
 INSERT INTO users_roles(user_id, role_id) VALUES 
@@ -74,3 +74,10 @@ INSERT INTO feedback(rating, comment, created_at, user_id, institution_id) VALUE
     (3, 'Am avut unele probleme cu produsul.', '2023-04-23 09:30:00', 1, 2),
     (5, 'Totul a fost perfect.', '2023-04-24 15:45:00', 2, 1),
     (2, 'Nu sunt multumit de serviciile oferite.', '2023-04-23 17:20:00', 3, 2);
+
+-- Populam doc_image
+INSERT INTO `mydb`.`doc_image` (`name`, `type`, `image`, `id_user`)
+VALUES ('document1', 'pdf', '0x546574677475794d656469756d', 1),
+       ('document2', 'jpg', '0x457874656e73696f6e', 2),
+       ('document3', 'png', '0x50616e64616d6f6e69756d', 1),
+       ('document4', 'pdf', '0x5468697320697320612064756d6d7920746573742064696f', 3);
