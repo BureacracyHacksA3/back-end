@@ -60,6 +60,7 @@ public class UserController {
         if (userService.isEmailTaken(email)) {
             return new ResponseEntity<>("There already exists an user with the email '" + email + "'!", HttpStatus.BAD_REQUEST);
         }
+
         if(!userService.isValidName(name))
         {
             return new ResponseEntity<>("Name '" + name + "' is not valid!", HttpStatus.BAD_REQUEST);
