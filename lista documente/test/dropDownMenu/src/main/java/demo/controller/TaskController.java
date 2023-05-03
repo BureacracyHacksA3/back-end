@@ -29,4 +29,11 @@ public class TaskController {
         return taskRepository.findByName(name)
                 .orElseThrow(() -> new MyResourceNotFoundException("Task not found with name: " + name));
     }
+    @GetMapping("/names")
+    public List<String> getAllTaskNames() {
+        return taskRepository.findAll()
+                .stream()
+                .map(Task::getName)
+                .collect(java.util.stream.Collectors.toList());
+    }
 }
