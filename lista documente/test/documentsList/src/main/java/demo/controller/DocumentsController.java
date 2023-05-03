@@ -1,6 +1,7 @@
 package demo.controller;
 
 import demo.model.Document;
+import demo.model.Task;
 import demo.repository.DocumentRepository;
 import demo.repository.TaskDocumentRepository;
 import demo.repository.TaskRepository;
@@ -29,11 +30,22 @@ public class DocumentsController {
 
     @GetMapping("/{taskId}/documents")
     public ResponseEntity<List<Document>> getDocumentsForTask(@PathVariable Long taskId) {
-        System.out.println("sau aici ai crapat?");
-        // Caută id-urile documentelor asociate task-ului cu id-ul specificat
         List<Long> documentIds = taskDocumentRepository.findDocumentIdsByTaskId(taskId);
-        System.out.println("aici ai crapat?");
-        // Caută toate documentele cu id-urile găsite
+        List<Document> documents = documentRepository.findByIdIn(documentIds);
+
+        if (documents.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } else {
+            return new ResponseEntity<>(documents, HttpStatus.OK);
+        }
+    }
+
+    @GetMapping("/{taskName}")
+    public ResponseEntity<List<Document>> getDocumentsForTaskByName(@PathVariable String taskName) {
+        Task task = taskRepository.findByName(taskName)
+                .orElseThrow(() -> new MyResourceNotFoundException("Task not found with name: " + taskName));
+
+        List<Long> documentIds = taskDocumentRepository.findDocumentIdsByTaskId(task.getId());
         List<Document> documents = documentRepository.findByIdIn(documentIds);
 
         if (documents.isEmpty()) {
