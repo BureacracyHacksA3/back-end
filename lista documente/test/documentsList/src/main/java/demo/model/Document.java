@@ -16,7 +16,7 @@ public class Document {
     @Column(name = "description")
     private String description;
     @Column(name = "price")
-    private Double price;
+    private String price;
 
     @Column(name = "institution_id")
     private Long institution_id;
@@ -48,11 +48,11 @@ public class Document {
         this.description = description;
     }
 
-    public Double getPrice() {
+    public String getPrice() {
         return price;
     }
 
-    public void setPrice(Double price) {
+    public void setPrice(String price) {
         this.price = price;
     }
 
