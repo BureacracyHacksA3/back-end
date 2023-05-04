@@ -43,8 +43,8 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `mydb`.`documents` (
   `document_id` INT NOT NULL AUTO_INCREMENT,
-  `name` VARCHAR(45) NOT NULL,
-  `description` VARCHAR(200) NULL,
+  `name` VARCHAR(200) NOT NULL,
+  `description` VARCHAR(400) NULL,
   `price` VARCHAR(10) NULL,
   `institution_id` INT NOT NULL,
   `path` VARCHAR(150) NOT NULL,
@@ -63,8 +63,8 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `mydb`.`tasks` (
   `task_id` INT NOT NULL AUTO_INCREMENT,
-  `name` VARCHAR(45) NOT NULL,
-  `description` VARCHAR(200) NULL,
+  `name` VARCHAR(200) NOT NULL,
+  `description` VARCHAR(400) NULL,
   `estimated_time` DATETIME NOT NULL,
   PRIMARY KEY (`task_id`))
 ENGINE = InnoDB;
