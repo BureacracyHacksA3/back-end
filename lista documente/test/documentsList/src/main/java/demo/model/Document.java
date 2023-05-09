@@ -1,8 +1,9 @@
 package demo.model;
 
 import jakarta.persistence.*;
+import lombok.Data;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
+@Data
 @Entity
 @Table(name = "documents")
 public class Document {
@@ -24,6 +25,9 @@ public class Document {
     @Column(name = "path")
     private String path;
 
+    @Lob
+    @Column(name = "file")
+    private byte[] file;
     public Long getId() {
         return id;
     }
@@ -70,5 +74,13 @@ public class Document {
 
     public void setPath(String path) {
         this.path = path;
+    }
+
+    public byte[] getFile() {
+        return file;
+    }
+
+    public void setFile(byte[] file) {
+        this.file = file;
     }
 }

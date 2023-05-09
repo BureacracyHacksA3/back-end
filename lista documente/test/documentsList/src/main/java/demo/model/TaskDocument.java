@@ -1,7 +1,9 @@
 package demo.model;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
+@Data
 @Entity
 @Table(name = "task_documents")
 public class TaskDocument {

@@ -1,9 +1,10 @@
 package demo.model;
 import jakarta.persistence.*;
+import lombok.Data;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 
-
+@Data
 @Entity
 @Table(name = "tasks")
 public class Task {
