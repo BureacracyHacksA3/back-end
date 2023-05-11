@@ -25,30 +25,32 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf().disable().cors().and()
-                .authorizeHttpRequests((authorize) ->
-                        {
-                            try {
-                                authorize
-                                        .requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll()
-                                        .requestMatchers(HttpMethod.POST, "/api/user-service/**").permitAll()
-                                        .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
+        http.csrf().disable()
+            .authorizeHttpRequests((authorize) ->
+                    {
+                        try {
+                            authorize
+                                .requestMatchers(HttpMethod.POST, "/api/auth/**").permitAll()
+                                    .requestMatchers(HttpMethod.POST, "/api/user-service/**").authenticated()
+                                    .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
                                         .requestMatchers("/api/doc/**").authenticated()
                                         .requestMatchers("/api/image/**").authenticated()
-                                        .requestMatchers(HttpMethod.GET, "/api/institutions/**").authenticated()
-                                        .requestMatchers(HttpMethod.GET, "/api/tasks/**").authenticated()
-                                        .anyRequest().authenticated()
-                                        .and()
-                                        .sessionManagement()
-                                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                                        .and()
-                                        .authenticationProvider(authenticationProvider)
-                                        .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
-                            } catch (Exception e) {
-                                throw new RuntimeException(e);
-                            }
+                                        .requestMatchers("/api/institutions/**").authenticated()
+                                        .requestMatchers("/api/tasks/**").authenticated()
+                                            .anyRequest().authenticated()
+                                    .and()
+                                    .sessionManagement()
+                                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                                    .and()
+                                    .authenticationProvider(authenticationProvider)
+                                    .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
                         }
-                );
+                    }
+
+
+            );
         return http.build();
     }
 
