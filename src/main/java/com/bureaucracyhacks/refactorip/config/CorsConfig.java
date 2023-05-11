@@ -22,4 +22,8 @@ public class CorsConfig {
             }
         };
     }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> 50ebe5c (CorsConfig for requests on diffrent ports(conflict when integration with flutter code(resolved)))
