@@ -1,11 +1,10 @@
 package com.bureaucracyhacks.refactorip.controllers;
 
-import com.bureaucracyhacks.refactorip.exceptions.TaskNotFoundException;
 import com.bureaucracyhacks.refactorip.models.DocumentJPA;
 import com.bureaucracyhacks.refactorip.models.TaskJPA;
 import com.bureaucracyhacks.refactorip.repositories.DocumentRepository;
 import com.bureaucracyhacks.refactorip.repositories.TaskRepository;
-import com.bureaucracyhacks.refactorip.utils.ImageUtil;
+import com.bureaucracyhacks.refactorip.services.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
@@ -18,11 +17,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import lombok.RequiredArgsConstructor;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @RestController
@@ -31,41 +27,24 @@ public class DocumentsController {
 
     private final DocumentRepository documentRepository;
     private final TaskRepository taskRepository;
+    @Autowired
+    private TaskService taskService;
 
     @GetMapping("/{taskId}/documents")
-    public ResponseEntity<List<DocumentJPA>> getDocumentsForTask(@PathVariable Long taskId) throws IOException {
+    public ResponseEntity<List<DocumentJPA>> getDocumentsForTask(@PathVariable Long taskId) {
+        List<DocumentJPA> documents = taskService.getDocumentsForTask(taskId);
 
-        TaskJPA task = taskRepository.findById(taskId)
-                .orElseThrow(TaskNotFoundException::new);
-
-        List<DocumentJPA> documents = task.getDocuments();
-
-        List<DocumentJPA> processedDocuments = new ArrayList<>();
-
-        for (DocumentJPA document : documents) {
-            if (document.getFile() != null) {
-                ResponseEntity<ByteArrayResource> response = downloadFile(document.getName());
-                ByteArrayResource fileResource = response.getBody();
-                assert fileResource != null;
-                document.setFile(fileResource.getByteArray());
-            }
-            processedDocuments.add(document);
-        }
-
-        if (processedDocuments.isEmpty()) {
+        if (documents.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } else {
-            return new ResponseEntity<>(processedDocuments, HttpStatus.OK);
+            return new ResponseEntity<>(documents, HttpStatus.OK);
         }
     }
 
 
     @GetMapping("/get-doc-by-name/{taskName}")
     public ResponseEntity<List<DocumentJPA>> getDocumentsForTaskByName(@PathVariable String taskName) {
-        TaskJPA task = taskRepository.findByName(taskName)
-                .orElseThrow(TaskNotFoundException::new);
-
-        List<DocumentJPA> documents = task.getDocuments();
+        List<DocumentJPA> documents = taskService.getDocumentsForTaskByName(taskName);
 
         if (documents.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -76,9 +55,7 @@ public class DocumentsController {
     @PostMapping("/upload/byName/{name}")
     public String handleFileUpload(@PathVariable String name, @RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes) {
         try {
-            DocumentJPA document = documentRepository.findByName(name).orElseThrow(() -> new RuntimeException("Document not found"));
-            document.setFile(ImageUtil.compressImage(file.getBytes()));
-            documentRepository.save(document);
+            taskService.uploadDocumentByName(name, file);
             redirectAttributes.addFlashAttribute("message", "You successfully uploaded " + file.getOriginalFilename() + "!");
         } catch (IOException e) {
             e.printStackTrace();
@@ -89,22 +66,22 @@ public class DocumentsController {
 
     @GetMapping("/download/byName/{name}")
     public ResponseEntity<ByteArrayResource> downloadFile(@PathVariable String name) {
-        DocumentJPA document = documentRepository.findByName(name).orElseThrow(() -> new RuntimeException("Document not found"));
-
-        byte[] decompressedFile = ImageUtil.decompressImage(document.getFile());
-
-        return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType("application/octet-stream"))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + document.getName() + ".png\"")
-                .body(new ByteArrayResource(decompressedFile));
+        try {
+            ByteArrayResource resource = taskService.downloadDocumentByName(name);
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType("application/octet-stream"))
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + name + ".png\"")
+                    .body(resource);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PostMapping("/upload/byId/{document_id}")
     public String handleFileUpload(@PathVariable Integer document_id, @RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes) {
         try {
-            DocumentJPA document = documentRepository.findById(document_id).orElseThrow(() -> new RuntimeException("Document not found"));
-            document.setFile(ImageUtil.compressImage(file.getBytes()));
-            documentRepository.save(document);
+            taskService.handleFileUpload(document_id, file.getBytes());
             redirectAttributes.addFlashAttribute("message", "You successfully uploaded " + file.getOriginalFilename() + "!");
         } catch (IOException e) {
             e.printStackTrace();
@@ -114,28 +91,20 @@ public class DocumentsController {
     }
 
     @GetMapping("/download/byId/{document_id}")
-    public ResponseEntity<ByteArrayResource> downloadFile(@PathVariable Integer document_id) {
-        DocumentJPA document = documentRepository.findById(document_id).orElseThrow(() -> new RuntimeException("Document not found"));
-
-        byte[] decompressedFile = ImageUtil.decompressImage(document.getFile());
-
-        return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType("application/octet-stream"))
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + document.getName() + ".png\"")
-                .body(new ByteArrayResource(decompressedFile));
+    public ResponseEntity<ByteArrayResource> downloadFile(@PathVariable Integer document_id) throws IOException {
+        return taskService.downloadDocument(document_id);
     }
 
     @GetMapping("/find-by-id/{id}")
-    public ResponseEntity<TaskJPA> getTaskById(@PathVariable(value = "id") Long taskId){
-        TaskJPA task = taskRepository.findById(taskId)
-                .orElseThrow(TaskNotFoundException::new);
+    public ResponseEntity<Optional<TaskJPA>> getTaskById(@PathVariable(value = "id") Long taskId){
+        Optional<TaskJPA> task = taskRepository.findById(taskId);
         return ResponseEntity.ok().body(task);
     }
 
     @GetMapping("/find-by-name/{name}")
-    public TaskJPA GetTaskByName(@PathVariable String name){
-        return taskRepository.findByName(name)
-                .orElseThrow(TaskNotFoundException::new);
+    public ResponseEntity<Optional<TaskJPA>> GetTaskByName(@PathVariable String name){
+        Optional<TaskJPA> task = taskRepository.findByName(name);
+        return ResponseEntity.ok().body(task);
     }
 
     @GetMapping("/names")
