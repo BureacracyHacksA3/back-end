@@ -73,7 +73,7 @@ public class DocumentsController {
             return new ResponseEntity<>(documents, HttpStatus.OK);
         }
     }
-    @PostMapping("/upload/{name}")
+    @PostMapping("/upload/byName/{name}")
     public String handleFileUpload(@PathVariable String name, @RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes) {
         try {
             DocumentJPA document = documentRepository.findByName(name).orElseThrow(() -> new RuntimeException("Document not found"));
@@ -87,7 +87,7 @@ public class DocumentsController {
         return "redirect:/";
     }
 
-    @GetMapping("/download/{name}")
+    @GetMapping("/download/byName/{name}")
     public ResponseEntity<ByteArrayResource> downloadFile(@PathVariable String name) {
         DocumentJPA document = documentRepository.findByName(name).orElseThrow(() -> new RuntimeException("Document not found"));
 
@@ -96,6 +96,32 @@ public class DocumentsController {
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType("application/octet-stream"))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + document.getName() + ".png\"")
+                .body(new ByteArrayResource(decompressedFile));
+    }
+
+    @PostMapping("/upload/byId/{document_id}")
+    public String handleFileUpload(@PathVariable Integer document_id, @RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes) {
+        try {
+            DocumentJPA document = documentRepository.findById(document_id).orElseThrow(() -> new RuntimeException("Document not found"));
+            document.setFile(ImageUtil.compressImage(file.getBytes()));
+            documentRepository.save(document);
+            redirectAttributes.addFlashAttribute("message", "You successfully uploaded " + file.getOriginalFilename() + "!");
+        } catch (IOException e) {
+            e.printStackTrace();
+            redirectAttributes.addFlashAttribute("message", "Failed to upload " + file.getOriginalFilename() + " => " + e.getMessage());
+        }
+        return "redirect:/";
+    }
+
+    @GetMapping("/download/byId/{document_id}")
+    public ResponseEntity<ByteArrayResource> downloadFile(@PathVariable Integer document_id) {
+        DocumentJPA document = documentRepository.findById(document_id).orElseThrow(() -> new RuntimeException("Document not found"));
+
+        byte[] decompressedFile = ImageUtil.decompressImage(document.getFile());
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.parseMediaType("application/octet-stream"))
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + document.getName() + "\"")
                 .body(new ByteArrayResource(decompressedFile));
     }
 
