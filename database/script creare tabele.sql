@@ -43,7 +43,7 @@ ENGINE = InnoDB;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `mydb`.`documents` (
   `document_id` INT NOT NULL AUTO_INCREMENT,
-  `name` VARCHAR(200) NOT NULL,
+  `name` VARCHAR(255) NOT NULL,
   `description` VARCHAR(400) NULL,
   `price` VARCHAR(10) NULL,
   `institution_id` INT NOT NULL,
