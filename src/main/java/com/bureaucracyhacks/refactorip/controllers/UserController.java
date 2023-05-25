@@ -27,7 +27,6 @@ public class UserController {
 
     @PostMapping("/update")
     public ResponseEntity<?> updateUser(@RequestParam String username, @RequestParam String email, @RequestParam String phone_number, @RequestParam String password, @RequestParam String name, @RequestParam String surname, @RequestParam String city) {
-
         try {
             userService.updateUser(username, email, phone_number, password, name, surname, city);
         } catch (UserNotFoundException e) {
@@ -64,7 +63,9 @@ public class UserController {
     }
     @PostMapping("/updatePassword")
     public ResponseEntity<?> updatePassword(@RequestParam String username, @RequestParam String password) {
-        System.out.println("updatePassword");
+        if (!userService.isValidPassword(password)) {
+            return new ResponseEntity<>("Password is not valid! (It should contain at least one upper case, one lower case, one number and be at least 8 characters long.)", HttpStatus.BAD_REQUEST);
+        }
         try {
             userService.updatePassword(username, password);
         } catch (UserNotFoundException e) {
