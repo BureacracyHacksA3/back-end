@@ -64,4 +64,11 @@ public class DocumentImageService {
 
         return ImageUtil.decompressImage(image.get().getImage());
     }
+
+    public Iterable<DocumentImageJPA> getAllImages(int id_user) {
+        if(!userRepository.existsById((long) id_user)) {
+            throw new UserNotFoundException();
+        }
+        return imageRepository.findAllByUserId(id_user);
+    }
 }

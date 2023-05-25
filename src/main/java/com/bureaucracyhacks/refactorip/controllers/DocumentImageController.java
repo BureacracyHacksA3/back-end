@@ -20,6 +20,7 @@ public class DocumentImageController {
 
     private final DocumentImageService documentImageService;
 
+
     @ResponseStatus(value = HttpStatus.OK)
     @PostMapping("/upload")
     public ResponseEntity<?> uploadImage(@RequestParam("image")MultipartFile file, int id_user) throws IOException {
@@ -58,5 +59,15 @@ public class DocumentImageController {
         }
 
         return ResponseEntity.status(HttpStatus.OK).contentType(MediaType.valueOf("image/png")).body(image);
+    }
+
+    @GetMapping("getAllImages/{id_user}")
+    public ResponseEntity<?> getAllImages(@PathVariable int id_user) {
+        try {
+            return new ResponseEntity<>(documentImageService.getAllImages(id_user), HttpStatus.OK);
+        }
+        catch (UserNotFoundException e) {
+            return new ResponseEntity<>("User not found!", HttpStatus.BAD_REQUEST);
+        }
     }
 }
