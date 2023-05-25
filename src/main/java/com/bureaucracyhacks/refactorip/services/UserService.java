@@ -329,10 +329,11 @@ public class UserService implements UserDetailsService {
             userDocument.setTask_id(Math.toIntExact(task.getId()));
             userDocument.setStatus("pending");
             userDocument.setUser_id(Math.toIntExact(user.getUser_id()));
-            user.getUserDocumentInfo().add(userDocument);
+            //user.getUserDocumentInfo().add(userDocument);
+            userDocumentsRepository.save(userDocument);
 
         }
-        userRepository.save(user);
+        //userRepository.save(user);
     }
 
     public boolean isAlreadyAdmin(String username) {
@@ -349,6 +350,26 @@ public class UserService implements UserDetailsService {
             return user.getTasks().stream().map(TaskJPA::getName).collect(Collectors.toList());
         }
         catch(NoSuchElementException e)
+        {
+            throw new UserNotFoundException();
+        }
+    }
+
+    public void forgotPassword(String email, String username, String newPassword) {
+        UserJPA user;
+        UserJPA user2;
+        try{
+            user = userRepository.findByUsername(username).orElseThrow();
+            user2 = userRepository.findByEmail(email).orElseThrow();
+
+            if(user.equals(user2))
+            {
+                user.setPassword(passwordEncoder.encode(newPassword));
+                userRepository.save(user);
+            }
+            else
+                throw new UserNotFoundException();
+        }catch (NoSuchElementException e)
         {
             throw new UserNotFoundException();
         }

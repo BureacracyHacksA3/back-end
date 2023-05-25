@@ -26,7 +26,18 @@ public class AuthController {
     public ResponseEntity<AuthenticationResponse> authenticateUser(@RequestParam String usernameOrEmail, @RequestParam String password) {
         return ResponseEntity.ok(authenticationService.authenticateUser(usernameOrEmail, password));
     }
-
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@RequestParam String email, @RequestParam String username, @RequestParam String newPassword)
+    {
+        try{
+            userService.forgotPassword(email, username, newPassword);
+        }
+        catch(Exception e)
+        {
+            return new ResponseEntity<>("Email or password is incorrect!", HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>("Password changed successfully!", HttpStatus.OK);
+    }
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestParam String name, @RequestParam String surname, @RequestParam String username, @RequestParam String email, @RequestParam String password, @RequestParam String phone_number, @RequestParam String city) throws IOException, IOException {
         if (userService.isUsernameTaken(username)) {
