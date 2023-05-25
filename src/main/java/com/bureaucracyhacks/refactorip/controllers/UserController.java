@@ -64,7 +64,9 @@ public class UserController {
     }
     @PostMapping("/updatePassword")
     public ResponseEntity<?> updatePassword(@RequestParam String username, @RequestParam String password) {
-        System.out.println("updatePassword");
+        if (!userService.isValidPassword(password)) {
+            return new ResponseEntity<>("Password is not valid! (It should contain at least one upper case, one lower case, one number and be at least 8 characters long.)", HttpStatus.BAD_REQUEST);
+        }
         try {
             userService.updatePassword(username, password);
         } catch (UserNotFoundException e) {
